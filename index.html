@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ハナショークリーンサービス予約</title>
+</head>
+<body>
+
+  <h2>ハナショークリーンサービス予約</h2>
+
+  <p id="status">LINEとの接続を確認しています…</p>
+
+  <button id="reservationButton" disabled>
+    予約フォームを開く
+  </button>
+
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
+  <script>
+    const LIFF_ID = "2011467709-3lVxW4X3";
+
+    const FORM_URL =
+      "https://docs.google.com/forms/d/e/1FAIpQLSePmGqJNh4_SL1MoJ-6rj7lIH_IweJIoHiwJtrBbJygDWLEJw/viewform";
+
+    async function main() {
+      const status = document.getElementById("status");
+      const button = document.getElementById("reservationButton");
+
+      try {
+        status.textContent = "LIFFを初期化しています…";
+
+        await liff.init({
+          liffId: LIFF_ID
+        });
+
+        status.textContent = "LINEとの接続を確認しました。";
+
+        button.disabled = false;
+
+        button.onclick = async function () {
+
+          if (!liff.isLoggedIn()) {
+            liff.login();
+            return;
+          }
+
+          const profile = await liff.getProfile();
+
+          const userId = profile.userId;
+
+          const url =
+            FORM_URL +
+            "?usp=pp_url&entry.168552606=" +
+            encodeURIComponent(userId);
+
+          window.location.href = url;
+        };
+      } catch (error) {
+        status.textContent =
+          "LINEとの接続に失敗しました。";
+
+        console.error(error);
+      }
+    }
+
+    main();
+  </script>
+
+</body>
+</html>
